@@ -1,5 +1,6 @@
-var restify = require('restify'),
-    fs = require('fs'),
+var fs = require('fs'),
+    setup = require('./setup'),
+    routes = require('./routes'),
     server,
     VERSION = "1.0.0",
     PORT = 8080,
@@ -13,64 +14,38 @@ var restify = require('restify'),
  * GET  /idea/{id}/comment
  */
 
+var setup = require('./setup');
+
 // Check for generated keys
 if (!fs.existsSync(SSL_CERT) || !fs.existsSync(SSL_KEY)) {
   return console.error("Certificate not found.\n\nGenerate a self-signed certificate with:\n\n> make generate-certs");
 }
 
-// Initialize our server
-server = restify.createServer({
+setup({
   certificate: fs.readFileSync(SSL_CERT),
   key: fs.readFileSync(SSL_KEY),
-  name: require('../package.json').name,
-  version: VERSION
-
-  // TODO
-});
-
-// Close the connection for curl immediately
-server.pre(restify.pre.userAgentConnection());
-
-// Parse JSON bodies, etc
-server.use(restify.bodyParser());
-
-// Rate limit API requests, sends 429 Too Many Requests on throttle
-server.use(restify.throttle({
-  burst: 100,
-  rate: 50, // requests per second
-  ip: true, // throttle based on ip
-  // username: true, // throttle based on req.username
-  overrides: {
-    '192.168.1.1': {
-      rate: 0,        // unlimited
-      burst: 0
+  name: require('./package.json').name,
+  version: VERSION,
+  throttle: {
+    burst: 100,
+    rate: 50, // requests per second
+    ip: true, // throttle based on ip
+    // username: true, // throttle based on req.username
+    overrides: {
+      '192.168.1.1': {
+        rate: 0,        // unlimited
+        burst: 0
+      }
     }
   }
-}));
+}, function(server) {
 
-// Make sure we can respond to what was asked for (HTTP 406 if not)
-server.use(restify.acceptParser(server.acceptable));
+  routes(server, function() {
 
-// parse the query string, but don't override params with query values of the
-// same key
-server.use(restify.queryParser({ mapParams: false }));
+    server.listen(PORT, function() {
+      console.log('%s listening at %s', server.name, server.url);
+    });
 
-// Allow JSONP requests (will look for 'callback' or 'jsonp' query strings)
-server.use(restify.jsonp());
+  });
 
-// If client sends 'accept-encoding: gzip' header, gzip it for them!
-server.use(restify.gzipResponse());
-
-
-
-server.get('/idea/:id', function(req, res, next) {
-
-  res.json(req.params);
-
-  // Stop handling routes here
-  return next(false);
-});
-
-server.listen(PORT, function() {
-  console.log('%s listening at %s', server.name, server.url);
 });

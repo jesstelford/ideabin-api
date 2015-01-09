@@ -2,7 +2,9 @@ var restify = require('restify'),
     fs = require('fs'),
     server,
     VERSION = "1.0.0",
-    PORT = 8080;
+    PORT = 8080,
+    SSL_KEY = './key.pem',
+    SSL_CERT = './cert.pem';
 
 /*
  * POST /idea
@@ -12,14 +14,14 @@ var restify = require('restify'),
  */
 
 // Check for generated keys
-if (!fs.existsSync('./cert.pem') || !fs.existsSync('./key.pem')) {
+if (!fs.existsSync(SSL_CERT) || !fs.existsSync(SSL_KEY)) {
   return console.error("Certificate not found.\n\nGenerate a self-signed certificate with:\n\n> make generate-certs");
 }
 
 // Initialize our server
 server = restify.createServer({
-  certificate: fs.readFileSync('./cert.pem'),
-  key: fs.readFileSync('./key.pem'),
+  certificate: fs.readFileSync(SSL_CERT),
+  key: fs.readFileSync(SSL_KEY),
   name: require('../package.json').name,
   version: VERSION
 

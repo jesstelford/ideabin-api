@@ -1,4 +1,6 @@
-require('./get_idea');
-require('./post_idea');
-require('./get_comment');
-require('./post_comment');
+module.exports = function(db) {
+  require('./get_idea')(db);
+  require('./post_idea')(db);
+  require('./get_comment')(db);
+  require('./post_comment')(db);
+}

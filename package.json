@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/jesstelford/ideabin-api",
   "dependencies": {
+    "forkdb": "^7.0.0",
+    "level": "^0.18.0",
     "restify": "^2.8.4"
   },
   "devDependencies": {

@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/jesstelford/ideabin-api/issues"
   },
-  "homepage": "https://github.com/jesstelford/ideabin-api"
+  "homepage": "https://github.com/jesstelford/ideabin-api",
+  "dependencies": {
+    "restify": "^2.8.4"
+  },
+  "devDependencies": {
+    "mocha": "^2.1.0"
+  }
 }

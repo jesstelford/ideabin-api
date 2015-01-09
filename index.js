@@ -1,18 +1,15 @@
 var fs = require('fs'),
     setup = require('./setup'),
     routes = require('./routes'),
+    dispatch = require('./dispatch'),
     server,
     VERSION = "1.0.0",
     PORT = 8080,
     SSL_KEY = './key.pem',
     SSL_CERT = './cert.pem';
 
-/*
- * POST /idea
- * GET  /idea/{id}
- * POST /idea/{id}/comment
- * GET  /idea/{id}/comment
- */
+// Register all the action listeners
+require('./actions');
 
 var setup = require('./setup');
 
@@ -40,9 +37,10 @@ setup({
   }
 }, function(server) {
 
-  routes(server, function() {
+  routes(server, dispatch, function() {
 
     server.listen(PORT, function() {
+      dispatch.emit('server:listening', server);
       console.log('%s listening at %s', server.name, server.url);
     });
 

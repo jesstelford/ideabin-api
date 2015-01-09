@@ -5,10 +5,10 @@ var restify = require('restify'),
     PORT = 8080;
 
 /*
- * POST /api/v1.0.0/idea
- * GET /api/v1.0.0/idea/{id}
- * POST /api/v1.0.0/idea/{id}/comment
- * GET /api/v1.0.0/idea/{id}/comment
+ * POST /idea
+ * GET  /idea/{id}
+ * POST /idea/{id}/comment
+ * GET  /idea/{id}/comment
  */
 
 // Check for generated keys
@@ -61,7 +61,7 @@ server.use(restify.gzipResponse());
 
 
 
-server.get('/api/v1.0.0/idea/:id', function(req, res, next) {
+server.get('/idea/:id', function(req, res, next) {
 
   res.json(req.params);
 

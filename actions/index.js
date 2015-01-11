@@ -1,6 +1,9 @@
-module.exports = function(db) {
-  require('./get_idea')(db);
-  require('./post_idea')(db);
-  require('./get_comment')(db);
-  require('./post_comment')(db);
+/**
+ * @param fdb Object a forkdb instance
+ */
+module.exports = function(fdb) {
+  require('./get_idea')(fdb);
+  require('./post_idea')(fdb);
+  require('./get_comment')(fdb);
+  require('./post_comment')(fdb);
 }

@@ -1,11 +1,10 @@
 var dispatch = require('../dispatch');
 
 /**
- * @param db Object a forkdb instance
+ * @param fdb Object a forkdb instance
  */
-module.exports = function(db) {
+module.exports = function(fdb) {
   dispatch.on('action:postIdea', function(req, res) {
-    db
     res.json(req.body);
   });
 }

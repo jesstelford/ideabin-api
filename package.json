@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/jesstelford/ideabin-api",
   "dependencies": {
+    "cuid": "^1.2.4",
     "forkdb": "^7.0.0",
     "level": "^0.18.0",
     "restify": "^2.8.4"

@@ -3,7 +3,7 @@ var dispatch = require('../dispatch'),
 
 module.exports = function() {
 
-  dispatch.on('action:postIdea', function(ideaData, req, res) {
+  dispatch.on('action:postIdea', function(ideaData, req, res, next) {
     res.json(ideaData);
   });
 

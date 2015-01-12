@@ -1,8 +1,8 @@
 var cuid = require('cuid'),
     restify = require('restify'),
-    dispatch = require('../dispatch'),
-    dbManager = require('../dbManager'),
-    actionUtils = require('./utils');
+    dispatch = require('../../dispatch'),
+    dbManager = require('../../dbManager'),
+    actionUtils = require('../utils');
 
 function escapeHash(hash) {
   // TODO: Implement me

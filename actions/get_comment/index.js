@@ -1,5 +1,5 @@
-var dispatch = require('../dispatch'),
-    dbManager = require('../dbManager');
+var dispatch = require('../../dispatch'),
+    dbManager = require('../../dbManager');
 
 module.exports = function() {
 

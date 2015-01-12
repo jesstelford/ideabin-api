@@ -1,10 +1,10 @@
-var dispatch = require('../dispatch');
+var dispatch = require('../dispatch'),
+    dbManager = require('../dbManager');
 
-/**
- * @param fdb Object a forkdb instance
- */
-module.exports = function(fdb) {
+module.exports = function() {
+
   dispatch.on('action:postIdea', function(ideaData, req, res) {
-    res.json(req.body);
+    res.json(ideaData);
   });
+
 }

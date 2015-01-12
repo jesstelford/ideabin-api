@@ -1,20 +1,16 @@
 var fs = require('fs'),
     setup = require('./setup'),
-    level = require('level'),
-    forkdb = require('forkdb'),
     routes = require('./routes'),
     dispatch = require('./dispatch'),
+    dbManager = require('./dbManager'),
     server,
     VERSION = "1.0.0",
     PORT = 8080,
     SSL_KEY = './key.pem',
     SSL_CERT = './cert.pem';
 
-var db = level('data.db'),
-    fdb = forkdb(db, {dir: 'data.blob'});
-
 // Register all the action listeners
-require('./actions')(fdb);
+require('./actions')();
 
 var setup = require('./setup');
 

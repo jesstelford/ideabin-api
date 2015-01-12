@@ -20,6 +20,7 @@
   "dependencies": {
     "cuid": "^1.2.4",
     "forkdb": "^7.0.0",
+    "is-my-json-valid": "^1.4.1",
     "level": "^0.18.0",
     "restify": "^2.8.4"
   },

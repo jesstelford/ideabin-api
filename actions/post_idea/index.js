@@ -2,7 +2,11 @@ var cuid = require('cuid'),
     restify = require('restify'),
     dispatch = require('../../dispatch'),
     dbManager = require('../../dbManager'),
-    actionUtils = require('../utils');
+    actionUtils = require('../utils'),
+    schemaLoader = require('is-my-json-valid/require'),
+
+    ideaDb = dbManager.get('ideas'),
+    validateJson = schemaLoader('./schema.orderly');
 
 function escapeHash(hash) {
   // TODO: Implement me
@@ -16,17 +20,15 @@ function escapeId(id) {
 
 module.exports = function() {
 
-  var ideaDb = dbManager.get('ideas');
-
   dispatch.on('action:postIdea', function(ideaData, req, res, next) {
 
     var writeMeta = {},
 
-        // Ensure all required parameters exist
-        requiredError = actionUtils.checkRequiredParams(['idea'], ideaData);
+        // Ensure data passes schema validation
+        validationError = actionUtils.validateParams(validateJson, ideaData);
 
-    if (requiredError) {
-      return next(requiredError);
+    if (validationError) {
+      return next(validationError);
     }
 
     // The idea's ID

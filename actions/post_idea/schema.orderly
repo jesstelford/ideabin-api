@@ -1,0 +1,8 @@
+// An [Orderly Schema](http://orderly-json.org/docs)
+object {
+  string idea;
+  string id?;   // optional id
+  array [
+    string {1,} // array elements must be a string of length at least 1
+  ] {1,} prev?; // `prev` is optional, but must have at least 1 element when used
+}*;

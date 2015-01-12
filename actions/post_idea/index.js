@@ -8,6 +8,10 @@ var cuid = require('cuid'),
     ideaDb = dbManager.get('ideas'),
     validateJson = schemaLoader('./schema.orderly');
 
+/**
+ * @param hash String The hash to escape
+ * @return String The escaped hash. `undefined` if `hash` not set.
+ */
 function escapeHash(hash) {
   // TODO: Implement me
   return hash;

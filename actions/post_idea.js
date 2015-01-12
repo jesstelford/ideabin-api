@@ -1,4 +1,5 @@
 var cuid = require('cuid'),
+    restify = require('restify'),
     dispatch = require('../dispatch'),
     dbManager = require('../dbManager'),
     actionUtils = require('./utils');
@@ -44,10 +45,10 @@ module.exports = function() {
       .createWriteStream(writeMeta, function(err, hash) {
 
         // If there was a database error
-        // TODO: A better error type / message
-        if (err) { return next(restify.restError('blah')); }
+        // TODO: Logging when there's an error
+        if (err) { return next(restify.InternalError("Couldn't save idea")); }
 
-        // Send back the success response
+        // Success! Send back the success response
         res.json({
           id: writeMeta.key,
           hash: hash

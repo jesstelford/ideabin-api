@@ -19,26 +19,41 @@ module.exports = function() {
 
   dispatch.on('action:postIdea', function(ideaData, req, res, next) {
 
-    var requiredError = actionUtils.checkRequiredParams(['idea'], ideaData);
+    var writeMeta = {},
+
+        // Ensure all required parameters exist
+        requiredError = actionUtils.checkRequiredParams(['idea'], ideaData);
 
     if (requiredError) {
       return next(requiredError);
     }
 
+    // The idea's ID
     if (ideaData.id) {
-      ideaData.id = escapeId(ideaData.id);
+      writeMeta.key = escapeId(ideaData.id);
     } else {
-      ideaData.id = cuid();
+      writeMeta.key = cuid();
     }
 
-    ideaDb
-      .createWriteStream({key: ideaData.id}, function(err, key) {
-        if (err) {
-          return next(restify.restError('blah'));
-        }
+    if (ideaData.prev) {
+      writeMeta.prev = escapeId(ideaData.prev);
+    }
 
-        res.json(ideaData);
+    // Write the Idea data
+    ideaDb
+      .createWriteStream(writeMeta, function(err, hash) {
+
+        // If there was a database error
+        // TODO: A better error type / message
+        if (err) { return next(restify.restError('blah')); }
+
+        // Send back the success response
+        res.json({
+          id: writeMeta.key,
+          hash: hash
+        });
       })
+      // Pipe the idea data into the db
       .end(ideaData.idea);
   });
 

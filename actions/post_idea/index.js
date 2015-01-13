@@ -58,6 +58,9 @@ module.exports = function() {
     // The idea's ID - generate a new one if one doesn't exist
     writeMeta.key = escapeId(ideaData.id) || cuid();
 
+    // The owner's ID
+    writeMeta.owner = escapeId(ideaData.owner);
+
     // Generate the appropriate 'prev' data
     writeMeta.prev = addKeyToPrev(writeMeta.key, ideaData.prev || []);
 

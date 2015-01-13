@@ -1,4 +1,5 @@
-var restify = require('restify'),
+var async = require('async'),
+    restify = require('restify'),
     dispatch = require('../../dispatch'),
     dbManager = require('../../dbManager'),
     actionUtils = require('../utils'),
@@ -16,16 +17,59 @@ function findHead(key, owner, cb) {
 
   readStream.on('error', cb);
 
+  console.log("finding head for ", key, owner);
   readStream.pipe(concatStream(function(heads) {
-    var hash;
-    heads.forEach(function(head) {
-      // TODO: Select the head belonging to the owner (how?)
-      // TODO: Select the latest head (how?)
-      hash = head.hash;
-      return false;
+
+    function filterByOwner(meta) {
+      return meta.owner == owner;
+    }
+
+    function hashToMetaMapper(hash, cb) {
+
+      // pull the hash out of forkdb
+      return ideaDb.get(hash.hash, function(err, meta) {
+
+        // mix in the hash into the meta data
+        if (!err && meta) {
+          meta.hash = hash.hash;
+        }
+
+        // call the original callback
+        cb(err, meta);
+      });
+    }
+
+    console.log('found heads', heads);
+
+    // Map to get all the meta data associated with each head
+    async.map(heads, hashToMetaMapper, function (err, headMetas) {
+
+      console.log('found heads meta', headMetas);
+
+      var hash,
+          headMetasForOwner;
+
+      headMetasForOwner = headMetas.filter(filterByOwner);
+
+      console.log('filtered heads meta', headMetasForOwner);
+
+      headMetasForOwner.forEach(function(head) {
+        // TODO: Select the latest head (how?)
+        hash = head.hash;
+        return false;
+      });
+
+      console.log('got hash', hash);
+
+      if (!hash) {
+        // TODO: Why is this error
+        cb(new Error('Couldn\'t find owner associated with key `' + key + '`'));
+      } else {
+        cb(null, hash);
+      }
     });
-    cb(null, hash);
-  }));;
+
+  }));
 }
 
 /**

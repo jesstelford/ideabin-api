@@ -119,8 +119,10 @@ module.exports = function() {
       findHead(id, owner, function(err, hash) {
 
         if (err) {
-          var errMessage = 'Could not load idea with id `' + id + '`, owner `' + owner + '`';
-          return next(new restify.InternalError(errMessage));
+          var errMessage = 'Could not load idea with id `' + id + '`, owner `' + owner + '`',
+              error = new restify.InternalError('foo');
+
+          return res.send(error.statusCode, error);
         }
 
         getIdea(hash, ideaProcessor(hash, res, next));

@@ -25,9 +25,67 @@ function readHeads(key, cb) {
 }
 
 /**
+ * @param hash String The forkdb hash to get the meta data for
+ * @param cb Function Called with (err <Error>, meta <Object>) Where meta has
+ * the 'hash' key added
+ */
+function getMetaForHash(hash, cb) {
+
+  // pull the meta out of forkdb
+  return ideaDb.get(hash.hash, function(err, meta) {
+
+    if (err) {
+      return cb(err);
+    }
+
+    // mix in the hash into the meta data
+    if (meta) {
+      meta.hash = hash.hash;
+    }
+
+    cb(null, meta);
+  });
+}
+
+/**
+ * @param heads Array An array of forkdb heads
+ * @param cb Function Called with (err <Error>, metas <Array>) where metas is an
+ * array of forkdb metas, including `hash`
+ */
+function getMetaForHeads(heads, cb) {
+
+  // Map to get all the meta data associated with each head
+  async.map(heads, getMetaForHash, cb);
+}
+
+/**
+ * @param metas Array array of forkdb metas (including `hash` key)
+ * @param owner String the owner to filter by
+ * @return String The matching meta | null
+ */
+function getLatestMetaByOwner(metas, owner) {
+
+  var result,
+      metasForOwner;
+
+  metasForOwner = metas.filter(function(meta) {
+    return meta.owner == owner;
+  });
+
+  metasForOwner.forEach(function(meta) {
+    // TODO: Select the latest head (how?)
+    result = meta;
+    return false;
+  });
+
+  return result;
+}
+
+/**
  * @param key String the forkdb key to look up
  * @param owner String TODO
- * @param cb Function Called with (err <Error>, hash <String>)
+ * @param cb Function Called with (err <Error>, meta <Object>) Where meta has
+ * key `hash`
  */
 function findHead(key, owner, cb) {
 
@@ -36,44 +94,15 @@ function findHead(key, owner, cb) {
       return cb(err);
     }
 
-    function filterByOwner(meta) {
-      return meta.owner == owner;
-    }
+    getMetaForHeads(heads, function (err, headMetas) {
 
-    function hashToMetaMapper(hash, cb) {
+      var meta = getLatestMetaByOwner(headMetas, owner);
 
-      // pull the hash out of forkdb
-      return ideaDb.get(hash.hash, function(err, meta) {
-
-        // mix in the hash into the meta data
-        if (!err && meta) {
-          meta.hash = hash.hash;
-        }
-
-        // call the original callback
-        cb(err, meta);
-      });
-    }
-
-    // Map to get all the meta data associated with each head
-    async.map(heads, hashToMetaMapper, function (err, headMetas) {
-
-      var hash,
-          headMetasForOwner;
-
-      headMetasForOwner = headMetas.filter(filterByOwner);
-
-      headMetasForOwner.forEach(function(head) {
-        // TODO: Select the latest head (how?)
-        hash = head.hash;
-        return false;
-      });
-
-      if (!hash) {
+      if (!meta) {
         // TODO: Why is this error
         cb(new Error('Couldn\'t find owner associated with key `' + key + '`'));
       } else {
-        cb(null, hash);
+        cb(null, meta);
       }
     });
 
@@ -130,7 +159,7 @@ module.exports = function() {
     } else {
       // No particular hash version was requested
 
-      findHead(id, owner, function(err, hash) {
+      findHead(id, owner, function(err, meta) {
 
         var errorMessage,
             error;
@@ -142,7 +171,7 @@ module.exports = function() {
           return res.send(error.statusCode, error);
         }
 
-        getIdea(hash, ideaProcessor(hash, res));
+        getIdea(meta.hash, ideaProcessor(meta.hash, res));
 
       });
     }

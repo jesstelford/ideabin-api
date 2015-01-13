@@ -7,17 +7,34 @@ var async = require('async'),
 
     ideaDb = dbManager.get('ideas');
 
+
+/**
+ * @param key String the forkdb key to look up
+ * @param cb Function Called with (err <Error>, heads <Array>)
+ */
+function readHeads(key, cb) {
+
+  var readStream = ideaDb.heads(key)
+
+  readStream.on('error', cb);
+
+  readStream.pipe(concatStream(function(heads) {
+    cb(null, heads);
+  }));
+
+}
+
 /**
  * @param key String the forkdb key to look up
  * @param owner String TODO
  * @param cb Function Called with (err <Error>, hash <String>)
  */
 function findHead(key, owner, cb) {
-  var readStream = ideaDb.heads(key)
 
-  readStream.on('error', cb);
-
-  readStream.pipe(concatStream(function(heads) {
+  readHeads(key, function(err, heads) {
+    if (err) {
+      return cb(err);
+    }
 
     function filterByOwner(meta) {
       return meta.owner == owner;
@@ -60,7 +77,7 @@ function findHead(key, owner, cb) {
       }
     });
 
-  }));
+  });
 }
 
 /**

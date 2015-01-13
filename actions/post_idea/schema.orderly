@@ -1,6 +1,8 @@
 // An [Orderly Schema](http://orderly-json.org/docs)
 object {
-  string idea;
+  object {
+	  string name;	
+	} idea;
   string id?;   // optional id
   array [
     string {1,} // array elements must be a string of length at least 1

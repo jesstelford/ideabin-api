@@ -45,6 +45,8 @@ module.exports = function() {
   dispatch.on('action:postIdea', function(ideaData, req, res, next) {
 
     var writeMeta = {},
+        writeStream,
+        writeStreamError = undefined,
 
         // Ensure data passes schema validation
         validationError = actionUtils.validateParams(validateJson, ideaData);
@@ -60,21 +62,31 @@ module.exports = function() {
     writeMeta.prev = addKeyToPrev(writeMeta.key, ideaData.prev || []);
 
     // Write the Idea data
-    ideaDb
-      .createWriteStream(writeMeta, function(err, hash) {
+    writeStream = ideaDb.createWriteStream(writeMeta, function(err, hash) {
 
-        // If there was a database error
-        // TODO: Logging when there's an error
-        if (err) { return next(restify.InternalError("Couldn't save idea")); }
+      // If there was a database error, or a stream error
+      // TODO: Logging when there's an error
+      if (err || writeStreamError) {
+        // TODO: Why doesn't this return the error to the HTTP response?
+        // TODO: To check: feed a raw JSON object into the writeStream
+        return next(restify.InternalError("Couldn't save idea"));
+      }
 
-        // Success! Send back the success response
-        res.json({
-          id: writeMeta.key,
-          hash: hash
-        });
-      })
-      // Pipe the idea data into the db
-      .end(ideaData.idea);
+      // Success! Send back the success response
+      res.json({
+        id: writeMeta.key,
+        hash: hash
+      });
+
+    })
+
+    // Catch errors when trying to pipe data to the stream
+    writeStream.on('error', function(err) {
+      writeStreamError = err;
+    });
+
+    // Pipe the idea data into the db
+    writeStream.end(JSON.stringify(ideaData.idea));
   });
 
 }

@@ -42,9 +42,10 @@ function addKeyToPrev(key, prevData) {
 
 module.exports = function() {
 
-  dispatch.on('action:postIdea', function(ideaData, req, res, next) {
+  dispatch.on('action:postIdea', function(ideaData, req, res) {
 
-    var writeMeta = {},
+    var error ,
+        writeMeta = {},
         writeStream,
         writeStreamError = undefined,
 
@@ -52,7 +53,8 @@ module.exports = function() {
         validationError = actionUtils.validateParams(validateJson, ideaData);
 
     if (validationError) {
-      return next(validationError);
+      error = new restify.InvalidArgumentError(validationError.message);
+      return res.send(error.statusCode, error);
     }
 
     // The idea's ID - generate a new one if one doesn't exist
@@ -70,9 +72,10 @@ module.exports = function() {
       // If there was a database error, or a stream error
       // TODO: Logging when there's an error
       if (err || writeStreamError) {
-        // TODO: Why doesn't this return the error to the HTTP response?
-        // TODO: To check: feed a raw JSON object into the writeStream
-        return next(restify.InternalError("Couldn't save idea"));
+
+        var errorMessage = "Couldn't save idea",
+            error = new restify.InternalError(errorMessage);
+        return res.send(error.statusCode, error);
       }
 
       // Success! Send back the success response

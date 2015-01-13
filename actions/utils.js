@@ -1,5 +1,3 @@
-var restify = require('restify');
-
 module.exports = {
 
   validateParams: function(validator, params) {
@@ -11,7 +9,7 @@ module.exports = {
           + '` '
           + error.message;
       }).join(', ');
-      return new restify.InvalidArgumentError(message);
+      return new Error(message);
     }
 
   },
@@ -28,7 +26,7 @@ module.exports = {
 
     if (missingKeys.length) {
       missingMessage = '`' + missingKeys.join('`, `') + '` missing';
-      return new restify.MissingParameterError(missingMessage);
+      return new Error(missingMessage);
     }
 
     return;

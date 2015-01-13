@@ -17,7 +17,6 @@ function findHead(key, owner, cb) {
 
   readStream.on('error', cb);
 
-  console.log("finding head for ", key, owner);
   readStream.pipe(concatStream(function(heads) {
 
     function filterByOwner(meta) {
@@ -39,27 +38,19 @@ function findHead(key, owner, cb) {
       });
     }
 
-    console.log('found heads', heads);
-
     // Map to get all the meta data associated with each head
     async.map(heads, hashToMetaMapper, function (err, headMetas) {
-
-      console.log('found heads meta', headMetas);
 
       var hash,
           headMetasForOwner;
 
       headMetasForOwner = headMetas.filter(filterByOwner);
 
-      console.log('filtered heads meta', headMetasForOwner);
-
       headMetasForOwner.forEach(function(head) {
         // TODO: Select the latest head (how?)
         hash = head.hash;
         return false;
       });
-
-      console.log('got hash', hash);
 
       if (!hash) {
         // TODO: Why is this error

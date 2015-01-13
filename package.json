@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/jesstelford/ideabin-api",
   "dependencies": {
+    "concat-stream": "^1.4.7",
     "cuid": "^1.2.4",
     "forkdb": "^7.0.0",
     "is-my-json-valid": "^1.4.1",

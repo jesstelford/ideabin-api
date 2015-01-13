@@ -96,9 +96,13 @@ function getIdea(hash, cb) {
  */
 function ideaProcessor(hash, res) {
   return function processIdea(err, blob) {
+
+    var errorMessage,
+        error;
+
     if (err) {
-      var errorMessage = 'Could not load idea with hash `' + hash + '`',
-          error = new restify.InternalError(errorMessage);
+      errorMessage = 'Could not load idea with hash `' + hash + '`',
+      error = new restify.InternalError(errorMessage);
 
       return res.send(error.statusCode, error);
     }
@@ -120,9 +124,12 @@ module.exports = function() {
 
       findHead(id, owner, function(err, hash) {
 
+        var errorMessage,
+            error;
+
         if (err) {
-          var errMessage = 'Could not load idea with id `' + id + '`, owner `' + owner + '`',
-              error = new restify.InternalError('foo');
+          errorMessage = 'Could not load idea with id `' + id + '`, owner `' + owner + '`',
+          error = new restify.InternalError(errorMessage);
 
           return res.send(error.statusCode, error);
         }

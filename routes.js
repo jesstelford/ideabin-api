@@ -19,8 +19,15 @@ module.exports = function(server, dispatch, callback) {
     return next(false);
   });
 
-  server.get('/idea/:ideaId', function(req, res, next) {
-    dispatch.emit('action:getIdea', req.params.ideaId, req, res, next);
+  server.get('/idea/:ideaId/:owner/:version', function(req, res, next) {
+    dispatch.emit('action:getIdea', req.params.ideaId, req.params.owner, req.params.version, req, res, next);
+    // Stop handling routes here
+    return next(false);
+  });
+
+  // Optional `version`
+  server.get('/idea/:ideaId/:owner', function(req, res, next) {
+    dispatch.emit('action:getIdea', req.params.ideaId, req.params.owner, undefined, req, res, next);
     // Stop handling routes here
     return next(false);
   });

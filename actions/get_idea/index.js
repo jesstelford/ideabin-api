@@ -90,15 +90,17 @@ function getIdea(hash, cb) {
 /**
  * @param hash String The hash of the idea we want to return
  * @param res Object The Response object
- * @param next Function The Restify next() function
- * @return Function (err <Error>, blob <String>) Calls `next` on failure (with
- * the err), or `res.json` on Success to send the data to the request.
+ * @return Function (err <Error>, blob <String>) Calls `res.send(err)` on
+ * failure (with the err), or `res.json` on Success to send the data to the
+ * request.
  */
-function ideaProcessor(hash, res, next) {
+function ideaProcessor(hash, res) {
   return function processIdea(err, blob) {
     if (err) {
-      var errMessage = 'Could not load idea with hash `' + hash + '`';
-      return next(new restify.InternalError(errMessage));
+      var errorMessage = 'Could not load idea with hash `' + hash + '`',
+          error = new restify.InternalError(errorMessage);
+
+      return res.send(error.statusCode, error);
     }
 
     res.json(JSON.parse(blob));
@@ -107,11 +109,11 @@ function ideaProcessor(hash, res, next) {
 
 module.exports = function() {
 
-  dispatch.on('action:getIdea', function(id, owner, version, req, res, next) {
+  dispatch.on('action:getIdea', function(id, owner, version, req, res) {
 
     if (version) {
       // A specific has version is already known
-      getIdea(version, ideaProcessor(version, res, next));
+      getIdea(version, ideaProcessor(version, res));
 
     } else {
       // No particular hash version was requested
@@ -125,7 +127,7 @@ module.exports = function() {
           return res.send(error.statusCode, error);
         }
 
-        getIdea(hash, ideaProcessor(hash, res, next));
+        getIdea(hash, ideaProcessor(hash, res));
 
       });
     }

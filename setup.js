@@ -17,6 +17,9 @@ module.exports = function(options, callback) {
   // Close the connection for curl immediately
   server.pre(restify.pre.userAgentConnection());
 
+  // Clean trailing slashes, etc
+  server.pre(restify.pre.sanitizePath());
+
   // Parse JSON bodies, etc
   server.use(restify.bodyParser());
 

@@ -9,14 +9,6 @@ var async = require('async'),
 
 
 /**
- * @param key String the forkdb key to look up
- * @param cb Function Called with (err <Error>, heads <Array>)
- */
-function readHeads(key, cb) {
-  concatStreamCallback(ideaDb.heads(key), cb);
-}
-
-/**
  * @param hash String The forkdb hash to get the meta data for
  * @param cb Function Called with (err <Error>, meta <Object>) Where meta has
  * the 'hash' key added
@@ -81,7 +73,7 @@ function getLatestMetaByOwner(metas, owner) {
  */
 function findHead(key, owner, cb) {
 
-  readHeads(key, function(err, heads) {
+  concatStreamCallback(ideaDb.heads(key), function(err, heads) {
     if (err) {
       return cb(err);
     }

@@ -5,6 +5,19 @@ describe('Database Manager', function() {
 
   describe('.add()', function() {
 
+    it('adds a new database', function() {
+      var db = {},
+          meta = {};
+      dbManager.add('addTest', db, meta);
+      assert(dbManager.get('addTest'));
+    });
+
+    it('adds with a default meta = {}', function() {
+      var db = {};
+      dbManager.add('addTestDefaultMeta', db);
+      assert.deepEqual(dbManager.getMeta('addTestDefaultMeta'), {});
+    });
+
   });
 
   describe('.get()', function() {

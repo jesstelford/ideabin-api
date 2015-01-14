@@ -13,12 +13,12 @@ var path = require('path'),
  * @param key String The name of the database (existing keys will NOT be
  * overwritten)
  * @param db Object The database to store
- * @param meta Object Meta data associated with stored database
+ * @param meta Object Meta data associated with stored database. default = {}
  */
 function add(key, db, meta) {
   meta = meta || {};
   databases[key] = databases[key] || db;
-  databasesMeta[key] = databasesMeta[key] || meta;
+  databasesMeta[key] = databasesMeta[key] || meta || {};
 }
 
 /**

@@ -16,7 +16,7 @@ describe('Database Manager', function() {
     });
 
     it('returns undefined when not found', function() {
-      assert(dbManager.get('qwerty') == undefined);
+      assert.equal(dbManager.get('qwerty'), undefined);
     });
 
   });

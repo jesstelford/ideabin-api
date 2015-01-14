@@ -26,6 +26,16 @@ describe('Database Manager', function() {
       assert.equal(dbManager.get('addOverideTest'), firstDb);
     });
 
+    it('does not override existing meta', function() {
+      var firstDb = {foo: 'bar'},
+          firstMeta = {zoo: 'zip'},
+          secondDb = {foo: 'quux'}
+          secondMeta = {zoo: 'abc'};
+      dbManager.add('addOverideMetaTest', firstDb, firstMeta);
+      dbManager.add('addOverideMetaTest', secondDb, secondMeta);
+      assert.equal(dbManager.getMeta('addOverideMetaTest'), firstMeta);
+    });
+
   });
 
   describe('.get()', function() {

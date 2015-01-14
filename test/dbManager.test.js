@@ -18,6 +18,14 @@ describe('Database Manager', function() {
       assert.deepEqual(dbManager.getMeta('addTestDefaultMeta'), {});
     });
 
+    it('does not override an existing database', function() {
+      var firstDb = {foo: 'bar'},
+          secondDb = {foo: 'quux'};
+      dbManager.add('addOverideTest', firstDb);
+      dbManager.add('addOverideTest', secondDb);
+      assert.equal(dbManager.get('addOverideTest'), firstDb);
+    });
+
   });
 
   describe('.get()', function() {

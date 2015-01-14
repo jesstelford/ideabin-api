@@ -3,7 +3,7 @@ var async = require('async'),
     dispatch = require('../../dispatch'),
     dbManager = require('../../dbManager'),
     actionUtils = require('../utils'),
-    concatStream = require('concat-stream'),
+    concatStreamCallback = require('concat-stream-callback'),
 
     ideaDb = dbManager.get('ideas');
 
@@ -13,15 +13,7 @@ var async = require('async'),
  * @param cb Function Called with (err <Error>, heads <Array>)
  */
 function readHeads(key, cb) {
-
-  var readStream = ideaDb.heads(key)
-
-  readStream.on('error', cb);
-
-  readStream.pipe(concatStream(function(heads) {
-    cb(null, heads);
-  }));
-
+  concatStreamCallback(ideaDb.heads(key), cb);
 }
 
 /**
@@ -114,14 +106,7 @@ function findHead(key, owner, cb) {
  * @param cb Function Called with (err <Error>, blob <String>)
  */
 function getIdea(hash, cb) {
-
-  var readStream = ideaDb.createReadStream(hash);
-
-  readStream.on('error', cb);
-
-  readStream.pipe(concatStream({encoding: 'string'}, function(blob) {
-    cb(null, blob);
-  }));
+  concatStreamCallback(ideaDb.createReadStream(hash), {encoding: 'string'}, cb)
 }
 
 /**

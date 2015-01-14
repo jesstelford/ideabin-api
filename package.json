@@ -19,7 +19,7 @@
   "homepage": "https://github.com/jesstelford/ideabin-api",
   "dependencies": {
     "async": "^0.9.0",
-    "concat-stream": "^1.4.7",
+    "concat-stream-callback": "^1.0.1",
     "cuid": "^1.2.4",
     "forkdb": "^7.0.0",
     "is-my-json-valid": "^1.4.1",

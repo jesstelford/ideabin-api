@@ -3,6 +3,7 @@ var cuid = require('cuid'),
     dbManager = require('../../dbManager'),
     actionUtils = require('../utils'),
     schemaLoader = require('is-my-json-valid/require'),
+    prevHashToMeta = require('./prevHashToMeta'),
 
     ideaDb = dbManager.get('ideas'),
     validateJson = schemaLoader('./schema.orderly');
@@ -23,20 +24,6 @@ function escapeHash(hash) {
 function escapeId(id) {
   // TODO: Implement me
   return id;
-}
-
-/**
- * @param key String The ForkDB key to add
- * @param prevData Array The array of previous hashes to process
- * @return Array [ { key: '<the key>', hash: '<the hash>' } ]
- */
-function addKeyToPrev(key, prevData) {
-  return prevData.map(function(prev) {
-    return {
-      key: key,
-      hash: prev
-    }
-  });
 }
 
 module.exports = function(ideaData, req, res) {
@@ -61,7 +48,7 @@ module.exports = function(ideaData, req, res) {
   writeMeta.owner = escapeId(ideaData.owner);
 
   // Generate the appropriate 'prev' data
-  writeMeta.prev = addKeyToPrev(writeMeta.key, ideaData.prev || []);
+  writeMeta.prev = prevHashToMeta(writeMeta.key, ideaData.prev || []);
 
   // Write the Idea data
   writeStream = ideaDb.createWriteStream(writeMeta, function(err, hash) {

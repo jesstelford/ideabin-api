@@ -54,6 +54,12 @@ describe('Database Manager', function() {
 
   describe('.getMeta()', function() {
 
+    it('gets the added DBs meta', function() {
+      var db = {}
+          meta = {foo: 'bar'};
+      dbManager.add('getTestMeta', db, meta);
+      assert.deepEqual(dbManager.getMeta('getTestMeta'), meta);
+    });
   });
 
 });

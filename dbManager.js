@@ -17,8 +17,8 @@ var path = require('path'),
  */
 function add(key, db, meta) {
   meta = meta || {};
-  databases.key = databases.key || db;
-  databasesMeta.key = databasesMeta.key || meta;
+  databases[key] = databases[key] || db;
+  databasesMeta[key] = databasesMeta[key] || meta;
 }
 
 /**
@@ -26,7 +26,7 @@ function add(key, db, meta) {
  * @return Object The stored database | undefined if not found
  */
 function get(key) {
-  return databases.key;
+  return databases[key];
 }
 
 /**
@@ -34,7 +34,7 @@ function get(key) {
  * @return Object The stored database meta info | undefined if not found
  */
 function getMeta(key) {
-  return databasesMeta.key;
+  return databasesMeta[key];
 }
 
 

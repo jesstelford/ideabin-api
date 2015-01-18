@@ -9,7 +9,7 @@ test_dir            := test
 
 
 # These targets don't produce any output
-.PHONY: test
+.PHONY: test lint
 
 # first / default target to perform all other targets
 all: test
@@ -20,3 +20,6 @@ test:
 generate-certs:
 	@openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -nodes -days 365
 	@echo "Generated private key key.pem, and certificate cert.pem"
+
+lint:
+	@eslint --ignore-path .gitignore ./

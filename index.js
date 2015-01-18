@@ -16,7 +16,8 @@ var setup = require('./setup');
 
 // Check for generated keys
 if (!fs.existsSync(SSL_CERT) || !fs.existsSync(SSL_KEY)) {
-  return console.error("Certificate not found.\n\nGenerate a self-signed certificate with:\n\n> make generate-certs");
+  console.error("Certificate not found.\n\nGenerate a self-signed certificate with:\n\n> make generate-certs");
+  process.exit(1);
 }
 
 setup({

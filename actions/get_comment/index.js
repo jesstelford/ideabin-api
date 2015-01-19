@@ -1,13 +1,14 @@
-var dispatch = require('../../dispatch'),
-    dbManager = require('../../dbManager');
+'use strict';
 
-module.exports = function() {
+var dispatch = require('../../dispatch');
 
-  var ideaDb = dbManager.get('ideas'),
-      commentDb = dbManager.get('comments');
+module.exports = function getCommentAction() {
 
-  dispatch.on('action:getComment', function(ideaId, commentId, req, res, next) {
-    res.json(req.params);
-  });
+  dispatch.on(
+    'action:getComment',
+    function getCommentHandler(ideaId, commentId, req, res) {
+      res.json(req.params);
+    }
+  );
 
-}
+};

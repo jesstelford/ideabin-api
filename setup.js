@@ -1,3 +1,5 @@
+'use strict';
+
 var restify = require('restify');
 
 /**
@@ -9,10 +11,10 @@ var restify = require('restify');
  *   performed
  * @param callback Function Will be called with the server once setup complete
  */
-module.exports = function(options, callback) {
+module.exports = function serverSetup(options, callback) {
 
   // Initialize our server
-  server = restify.createServer(options);
+  var server = restify.createServer(options);
 
   // Close the connection for curl immediately
   server.pre(restify.pre.userAgentConnection());
@@ -43,4 +45,4 @@ module.exports = function(options, callback) {
 
   callback(server);
 
-}
+};

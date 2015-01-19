@@ -1,13 +1,15 @@
+'use strict';
+
 var path = require('path'),
     level = require('level'),
-    forkdb = require('forkdb'),
+    forkdb = require('forkdb');
 
-    directory = './',
+var directory = './',
     databases = {},
     databasesMeta = {},
 
-    db = level(path.resolve(directory, 'data.db')),
-    ideaDb = forkdb(db, {dir: path.resolve(directory, 'data.blob')});
+    levelDb = level(path.resolve(directory, 'data.db')),
+    ideaDb = forkdb(levelDb, {dir: path.resolve(directory, 'data.blob')});
 
 /**
  * @param key String The name of the database (existing keys will NOT be
@@ -47,4 +49,4 @@ module.exports = {
   add: add,
   get: get,
   getMeta: getMeta
-}
+};

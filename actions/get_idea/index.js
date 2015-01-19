@@ -1,11 +1,12 @@
+'use strict';
+
 var async = require('async'),
     restify = require('restify'),
     dispatch = require('../../dispatch'),
     dbManager = require('../../dbManager'),
-    actionUtils = require('../utils'),
-    concatStreamCallback = require('concat-stream-callback'),
+    concatStreamCallback = require('concat-stream-callback');
 
-    ideaDb = dbManager.get('ideas');
+var ideaDb = dbManager.get('ideas');
 
 
 /**
@@ -16,7 +17,7 @@ var async = require('async'),
 function getMetaForHash(hash, cb) {
 
   // pull the meta out of forkdb
-  return ideaDb.get(hash.hash, function(err, meta) {
+  return ideaDb.get(hash.hash, function ideaMetaReceived(err, meta) {
 
     if (err) {
       return cb(err);
@@ -52,11 +53,11 @@ function getLatestMetaByOwner(metas, owner) {
   var result,
       metasForOwner;
 
-  metasForOwner = metas.filter(function(meta) {
-    return meta.owner == owner;
+  metasForOwner = metas.filter(function isOwner(meta) {
+    return meta.owner === owner;
   });
 
-  metasForOwner.forEach(function(meta) {
+  metasForOwner.forEach(function updateToLatestHead(meta) {
     // TODO: Select the latest head (how?)
     result = meta;
     return false;
@@ -73,14 +74,20 @@ function getLatestMetaByOwner(metas, owner) {
  */
 function findHead(key, owner, cb) {
 
-  concatStreamCallback(ideaDb.heads(key), function(err, heads) {
+  concatStreamCallback(ideaDb.heads(key), function streamReceived(err, heads) {
     if (err) {
       return cb(err);
     }
 
-    getMetaForHeads(heads, function (err, headMetas) {
+    getMetaForHeads(heads, function headsReceived(headErr, headMetas) {
 
-      var meta = getLatestMetaByOwner(headMetas, owner);
+      var meta;
+
+      if (headErr) {
+        return cb(headErr);
+      }
+
+      meta = getLatestMetaByOwner(headMetas, owner);
 
       if (!meta) {
         // TODO: Why is this error
@@ -98,7 +105,7 @@ function findHead(key, owner, cb) {
  * @param cb Function Called with (err <Error>, blob <String>)
  */
 function getIdea(hash, cb) {
-  concatStreamCallback(ideaDb.createReadStream(hash), {encoding: 'string'}, cb)
+  concatStreamCallback(ideaDb.createReadStream(hash), {encoding: 'string'}, cb);
 }
 
 /**
@@ -115,44 +122,51 @@ function ideaProcessor(hash, res) {
         error;
 
     if (err) {
-      errorMessage = 'Could not load idea with hash `' + hash + '`',
+      errorMessage = 'Could not load idea with hash `' + hash + '`';
       error = new restify.InternalError(errorMessage);
 
       return res.send(error.statusCode, error);
     }
 
     res.json(JSON.parse(blob));
-  }
+  };
 }
 
-module.exports = function() {
+module.exports = function getIdeaAction() {
 
-  dispatch.on('action:getIdea', function(id, owner, version, req, res) {
+  dispatch.on(
+    'action:getIdea',
+    function getIdeaHandler(id, owner, version, req, res) {
 
-    if (version) {
-      // A specific has version is already known
-      getIdea(version, ideaProcessor(version, res));
+      if (version) {
+        // A specific has version is already known
+        getIdea(version, ideaProcessor(version, res));
 
-    } else {
-      // No particular hash version was requested
+      } else {
+        // No particular hash version was requested
 
-      findHead(id, owner, function(err, meta) {
+        findHead(id, owner, function headFound(err, meta) {
 
-        var errorMessage,
-            error;
+          var errorMessage,
+              error;
 
-        if (err) {
-          errorMessage = 'Could not load idea with id `' + id + '`, owner `' + owner + '`',
-          error = new restify.InternalError(errorMessage);
+          if (err) {
+            errorMessage = 'Could not load idea with id `' +
+              id +
+              '`, owner `' +
+              owner +
+              '`';
+            error = new restify.InternalError(errorMessage);
 
-          return res.send(error.statusCode, error);
-        }
+            return res.send(error.statusCode, error);
+          }
 
-        getIdea(meta.hash, ideaProcessor(meta.hash, res));
+          getIdea(meta.hash, ideaProcessor(meta.hash, res));
 
-      });
+        });
+      }
+
     }
+  );
 
-  });
-
-}
+};

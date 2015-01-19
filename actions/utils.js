@@ -1,9 +1,13 @@
+'use strict';
+
 module.exports = {
 
-  validateParams: function(validator, params) {
+  validateParams: function validateParams(validator, params) {
+
+    var message;
 
     if (!validator(params)) {
-      message = validator.errors.map(function(error) {
+      message = validator.errors.map(function stringifyError(error) {
         return '`'
           + error.field.replace('data.', '')
           + '` '
@@ -14,11 +18,11 @@ module.exports = {
 
   },
 
-  checkRequiredParams: function(requiredParams, params) {
+  checkRequiredParams: function checkRequiredParams(requiredParams, params) {
     var missingKeys = [],
         missingMessage = '';
 
-    requiredParams.forEach(function(paramKey) {
+    requiredParams.forEach(function pushKeyIfMissing(paramKey) {
       if (!params[paramKey]) {
         missingKeys.push(paramKey);
       }
@@ -29,7 +33,7 @@ module.exports = {
       return new Error(missingMessage);
     }
 
-    return;
+    return undefined;
 
   }
-}
+};

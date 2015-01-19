@@ -1,8 +1,12 @@
-var dispatch = require('../../dispatch'),
-    dbManager = require('../../dbManager');
+'use strict';
 
-module.exports = function() {
-  dispatch.on('action:postComment', function(ideaId, commentData, req, res, next) {
-    res.json(req.body);
-  });
-}
+var dispatch = require('../../dispatch');
+
+module.exports = function postCommentAction() {
+  dispatch.on(
+    'action:postComment',
+    function postCommentHandler(ideaId, commentData, req, res) {
+      res.json(req.body);
+    }
+  );
+};

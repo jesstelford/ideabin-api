@@ -1,21 +1,14 @@
+'use strict';
+
 var cuid = require('cuid'),
     restify = require('restify'),
     dbManager = require('../../dbManager'),
     actionUtils = require('../utils'),
     schemaLoader = require('is-my-json-valid/require'),
-    prevHashToMeta = require('./prevHashToMeta'),
+    prevHashToMeta = require('./prevHashToMeta');
 
-    ideaDb = dbManager.get('ideas'),
+var ideaDb = dbManager.get('ideas'),
     validateJson = schemaLoader('./schema.orderly');
-
-/**
- * @param hash String The hash to escape
- * @return String The escaped hash. `undefined` if `hash` not set.
- */
-function escapeHash(hash) {
-  // TODO: Implement me
-  return hash;
-}
 
 /**
  * @param id String The id to escape
@@ -26,19 +19,19 @@ function escapeId(id) {
   return id;
 }
 
-module.exports = function(ideaData, req, res) {
+module.exports = function postIdeaHandler(ideaData, req, res) {
 
-  var error ,
+  var restError,
       writeMeta = {},
       writeStream,
-      writeStreamError = undefined,
+      writeStreamError,
 
       // Ensure data passes schema validation
       validationError = actionUtils.validateParams(validateJson, ideaData);
 
   if (validationError) {
-    error = new restify.InvalidArgumentError(validationError.message);
-    return res.send(error.statusCode, error);
+    restError = new restify.InvalidArgumentError(validationError.message);
+    return res.send(restError.statusCode, restError);
   }
 
   // The idea's ID - generate a new one if one doesn't exist
@@ -51,31 +44,36 @@ module.exports = function(ideaData, req, res) {
   writeMeta.prev = prevHashToMeta(writeMeta.key, ideaData.prev || []);
 
   // Write the Idea data
-  writeStream = ideaDb.createWriteStream(writeMeta, function(err, hash) {
+  writeStream = ideaDb.createWriteStream(
+    writeMeta,
+    function ideaWritten(err, hash) {
 
-    // If there was a database error, or a stream error
-    // TODO: Logging when there's an error
-    if (err || writeStreamError) {
+      var errorMessage;
 
-      var errorMessage = "Couldn't save idea",
-          error = new restify.InternalError(errorMessage);
-      return res.send(error.statusCode, error);
+      // If there was a database error, or a stream error
+      // TODO: Logging when there's an error
+      if (err || writeStreamError) {
+
+        errorMessage = 'Couldn\'t save idea';
+        restError = new restify.InternalError(errorMessage);
+        return res.send(restError.statusCode, restError);
+      }
+
+      // Success! Send back the success response
+      res.json({
+        id: writeMeta.key,
+        hash: hash
+      });
+
     }
-
-    // Success! Send back the success response
-    res.json({
-      id: writeMeta.key,
-      hash: hash
-    });
-
-  })
+  );
 
   // Catch errors when trying to pipe data to the stream
-  writeStream.on('error', function(err) {
+  writeStream.on('error', function writeIdeaError(err) {
     writeStreamError = err;
   });
 
   // Pipe the idea data into the db
   writeStream.end(JSON.stringify(ideaData.idea));
 
-}
+};

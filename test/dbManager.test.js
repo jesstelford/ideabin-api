@@ -1,3 +1,5 @@
+'use strict';
+
 var assert = require('assert'),
     dbManager = require('../dbManager');
 
@@ -29,7 +31,7 @@ describe('Database Manager', function() {
     it('does not override existing meta', function() {
       var firstDb = {foo: 'bar'},
           firstMeta = {zoo: 'zip'},
-          secondDb = {foo: 'quux'}
+          secondDb = {foo: 'quux'},
           secondMeta = {zoo: 'abc'};
       dbManager.add('addOverideMetaTest', firstDb, firstMeta);
       dbManager.add('addOverideMetaTest', secondDb, secondMeta);
@@ -55,7 +57,7 @@ describe('Database Manager', function() {
   describe('.getMeta()', function() {
 
     it('gets the added DBs meta', function() {
-      var db = {}
+      var db = {},
           meta = {foo: 'bar'};
       dbManager.add('getTestMeta', db, meta);
       assert.deepEqual(dbManager.getMeta('getTestMeta'), meta);

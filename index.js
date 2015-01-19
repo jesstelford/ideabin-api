@@ -1,10 +1,11 @@
+'use strict';
+
 var fs = require('fs'),
     setup = require('./setup'),
     routes = require('./routes'),
-    dispatch = require('./dispatch'),
-    dbManager = require('./dbManager'),
-    server,
-    VERSION = "1.0.0",
+    dispatch = require('./dispatch');
+
+var VERSION = '1.0.0',
     PORT = 8080,
     SSL_KEY = './key.pem',
     SSL_CERT = './cert.pem';
@@ -12,12 +13,13 @@ var fs = require('fs'),
 // Register all the action listeners
 require('./actions')();
 
-var setup = require('./setup');
-
 // Check for generated keys
 if (!fs.existsSync(SSL_CERT) || !fs.existsSync(SSL_KEY)) {
-  console.error("Certificate not found.\n\nGenerate a self-signed certificate with:\n\n> make generate-certs");
-  process.exit(1);
+  throw new Error(
+    'Certificate not found.\n\n' +
+    'Generate a self-signed certificate with:\n\n' +
+    '> make generate-certs'
+  );
 }
 
 setup({
@@ -37,11 +39,11 @@ setup({
       }
     }
   }
-}, function(server) {
+}, function serverSetupDone(server) {
 
-  routes(server, dispatch, function() {
+  routes(server, dispatch, function routeSetupDone() {
 
-    server.listen(PORT, function() {
+    server.listen(PORT, function serverListening() {
       dispatch.emit('server:listening', server);
       console.log('%s listening at %s', server.name, server.url);
     });

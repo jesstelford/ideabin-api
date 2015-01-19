@@ -19,7 +19,7 @@ function escapeId(id) {
   return id;
 }
 
-module.exports = function postIdeaHandler(ideaData, req, res) {
+module.exports = function postIdeaHandler(ideaData, req, res, next) {
 
   var restError,
       writeMeta = {},
@@ -31,7 +31,8 @@ module.exports = function postIdeaHandler(ideaData, req, res) {
 
   if (validationError) {
     restError = new restify.InvalidArgumentError(validationError.message);
-    return res.send(restError.statusCode, restError);
+    res.send(restError.statusCode, restError);
+    return next();
   }
 
   // The idea's ID - generate a new one if one doesn't exist
@@ -56,7 +57,9 @@ module.exports = function postIdeaHandler(ideaData, req, res) {
 
         errorMessage = 'Couldn\'t save idea';
         restError = new restify.InternalError(errorMessage);
-        return res.send(restError.statusCode, restError);
+
+        res.send(restError.statusCode, restError);
+        return next();
       }
 
       // Success! Send back the success response
@@ -64,6 +67,8 @@ module.exports = function postIdeaHandler(ideaData, req, res) {
         id: writeMeta.key,
         hash: hash
       });
+
+      next();
 
     }
   );

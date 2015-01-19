@@ -2,5 +2,8 @@
 	"env": {
 		"node": true,
 		"mocha": true
+	},
+	"rules": {
+		"func-names": 0 // mocha tests have a lot of anonymous callbacks
 	}
 }

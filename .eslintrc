@@ -28,7 +28,7 @@
 		"one-var": 0,
 		"vars-on-top": 1,
 		"eqeqeq": 1,
-		"curly": [1, "multi"],
+		"curly": [1, "all"],
 		"no-mixed-spaces-and-tabs": 1,
 		"space-before-blocks": [1, "always"],
 		"space-infix-ops": 1,

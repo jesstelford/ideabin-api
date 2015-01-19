@@ -39,4 +39,22 @@ describe('POST idea', function() {
 
   });
 
+  it('throws a validation error', function(done) {
+    // See actions/post_idea/schema.orderly
+    var ideaData = {
+        owner: 'jess'
+      };
+
+    testPost(ideaData, function(req, res) {
+
+      assert.equal(res.json.callCount, 0);
+      assert.equal(res.send.callCount, 1);
+      assert.equal(res.send.args[0][0], 409);
+      assert.equal(res.send.args[0][1].message, '`idea` is required');
+      done();
+
+    });
+
+  });
+
 });

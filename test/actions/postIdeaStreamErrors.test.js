@@ -11,12 +11,15 @@ var postIdea,
         return {
           createWriteStream: function(data, callback) {
 
+            var writable = new Writable();
+
             // emulate async Writable
             process.nextTick(function() {
-              callback(new Error('a test error'));
+              writable.emit('error', new Error('a test error'));
+              callback(null, {});
             });
 
-            return new Writable();
+            return writable;
           }
         };
       }
@@ -43,7 +46,7 @@ function testPost(ideaData, callback) {
 
 describe('POST idea', function() {
 
-  it('throws an error on failed write to DB', function(done) {
+  it('throws an error when stream has an error', function(done) {
     // See actions/post_idea/schema.orderly
     var ideaData = {
         idea: {
@@ -63,5 +66,4 @@ describe('POST idea', function() {
     });
 
   });
-
 });

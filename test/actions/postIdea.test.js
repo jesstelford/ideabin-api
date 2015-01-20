@@ -21,7 +21,7 @@ function testPost(ideaData, callback) {
 
 describe('POST idea', function() {
 
-  it('saves to database', function(done) {
+  it('responds with json object', function(done) {
     var ideaData = {
         idea: {
           name: 'foo'
@@ -33,6 +33,8 @@ describe('POST idea', function() {
 
       assert.equal(res.send.callCount, 0);
       assert.equal(typeof res.json.args[0][0], 'object');
+      assert.equal(typeof res.json.args[0][0].id, 'string');
+      assert.equal(typeof res.json.args[0][0].hash, 'string');
       done();
 
     });

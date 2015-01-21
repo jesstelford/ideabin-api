@@ -25,7 +25,7 @@ var postIdea,
       }
     };
 
-postIdea = proxyquire('../../actions/post_idea/handler', {
+postIdea = proxyquire('../../../actions/post_idea/handler', {
   '../../dbManager': dbManagerStub
 });
 

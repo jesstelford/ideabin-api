@@ -2,8 +2,8 @@
 
 var sinon = require('sinon'),
     assert = require('assert'),
-    postIdea = require('../../actions/post_idea/handler'),
-    dbManager = require('../../dbManager'),
+    postIdea = require('../../../actions/post_idea/handler'),
+    dbManager = require('../../../dbManager'),
     concatStreamCallback = require('concat-stream-callback');
 
 function testPost(ideaData, callback) {

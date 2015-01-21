@@ -6,25 +6,8 @@ var sinon = require('sinon'),
     proxyquire = require('proxyquire');
 
 var postIdea,
-    dbManagerStub = {
-      get: function() {
-        return {
-          createWriteStream: function(data, callback) {
+    dbManagerStub;
 
-            // emulate async Writable
-            process.nextTick(function() {
-              callback(new Error('a test error'));
-            });
-
-            return new Writable();
-          }
-        };
-      }
-    };
-
-postIdea = proxyquire('../../../actions/post_idea/handler', {
-  '../../dbManager': dbManagerStub
-});
 
 function testPost(ideaData, callback) {
 
@@ -42,6 +25,34 @@ function testPost(ideaData, callback) {
 }
 
 describe('POST idea', function() {
+
+  before('mock requires', function() {
+
+    dbManagerStub = {
+      get: function() {
+        return {
+          createWriteStream: function(data, callback) {
+
+            // emulate async Writable
+            process.nextTick(function() {
+              callback(new Error('a test error'));
+            });
+
+            return new Writable();
+          }
+        };
+      }
+    };
+
+    postIdea = proxyquire('../../../actions/post_idea/handler', {
+      '../../dbManager': dbManagerStub
+    });
+
+  });
+
+  after('clean up mocks', function() {
+    dbManagerStub = {};
+  });
 
   it('throws an error on failed write to DB', function(done) {
     // See actions/post_idea/schema.orderly

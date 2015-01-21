@@ -6,6 +6,27 @@ var sinon = require('sinon'),
     proxyquire = require('proxyquire');
 
 var postIdea,
+    dbManagerStub;
+
+function testPost(ideaData, callback) {
+
+  var req = {},
+      res = {
+        send: sinon.spy(),
+        json: sinon.spy()
+      };
+
+  postIdea(ideaData, req, res, function() {
+    var args = [req, res].concat(arguments);
+    callback.apply(this, args);
+  });
+
+}
+
+describe('POST idea', function() {
+
+  before('setup mocks', function() {
+
     dbManagerStub = {
       get: function() {
         return {
@@ -25,26 +46,15 @@ var postIdea,
       }
     };
 
-postIdea = proxyquire('../../../actions/post_idea/handler', {
-  '../../dbManager': dbManagerStub
-});
+    postIdea = proxyquire('../../../actions/post_idea/handler', {
+      '../../dbManager': dbManagerStub
+    });
 
-function testPost(ideaData, callback) {
-
-  var req = {},
-      res = {
-        send: sinon.spy(),
-        json: sinon.spy()
-      };
-
-  postIdea(ideaData, req, res, function() {
-    var args = [req, res].concat(arguments);
-    callback.apply(this, args);
   });
 
-}
-
-describe('POST idea', function() {
+  after('clean up mocks', function() {
+    dbManagerStub = {};
+  });
 
   it('throws an error when stream has an error', function(done) {
     // See actions/post_idea/schema.orderly

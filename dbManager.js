@@ -1,7 +1,7 @@
 'use strict';
 
 var path = require('path'),
-    level = require('level'),
+    level = require('levelup'),
     forkdb = require('forkdb');
 
 var directory = './',

@@ -131,6 +131,14 @@ function ideaProcessor(hash, res) {
   };
 }
 
+/**
+ * @param id String The id/key of the idea to get
+ * @param owner String The owner of the idea
+ * @param version String The hash version required. If undefined, will get the
+ * latest version. Note: the parameter is NOT optional.
+ * @param req Object The Request Object
+ * @param res Object The Response Object
+ */
 module.exports = function getIdeaHandler(id, owner, version, req, res) {
 
   if (version) {

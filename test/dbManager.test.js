@@ -52,6 +52,12 @@ describe('Database Manager', function() {
       assert.equal(dbManager.get('qwerty'), undefined);
     });
 
+    it('returns an object with correct methods', function() {
+      var ideaDb = dbManager.get('ideas');
+      assert.equal(typeof ideaDb.createWriteStream, 'function');
+      assert.equal(typeof ideaDb.createReadStream, 'function');
+    });
+
   });
 
   describe('.getMeta()', function() {
